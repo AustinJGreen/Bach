@@ -5,6 +5,7 @@ Bach is a command line program that can play [Marbleboard](https://github.com/aj
 ```
 newgame - starts a new game
 roll [x+y] - sets the current players roll, ex: roll 5+1
+move [move] - plays the move for the current player
 tomove - outputs the current player's turn
 moves - outputs all the legal moves for the current position
 go infinite - Searches until the stop command is called to find the best move.
