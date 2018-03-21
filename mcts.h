@@ -33,6 +33,7 @@ namespace mcts
     static bmutex m_games;
 
     //Infinite search vars
+    static bool searching;
     static bool stop;
     static int* gameCnt;
     static bthread threads[THREAD_COUNT];
@@ -294,6 +295,7 @@ namespace mcts
         }
 
         //Create and start running threads
+        searching = true;
         for (int i = 0; i < THREAD_COUNT; i++)
         {
             //Start searches
@@ -302,6 +304,11 @@ namespace mcts
     }
 
     int64 stopSearch() {
+        if (!searching) {
+            return 0;
+        }
+
+        searching = false;
         m_stop.lock();
         stop = true;
         m_stop.unlock();
@@ -309,7 +316,6 @@ namespace mcts
         //Wait for all threads to exit
         for (int i = 0; i < THREAD_COUNT; i++)
         {
-            //Start searches
             threads[i].join();
         }
 

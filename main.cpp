@@ -69,16 +69,14 @@ void commandLine()
     do {
         getline(cin, cmd);
         istringstream is(cmd);
-        token.clear(); // Avoid a stale if getline() returns empty or blank line
+        token.clear();
         is >> skipws >> token;
 
-        if (token  == "newgame")
-        {
+        if (token  == "newgame") {
             pos.reset();
         }
 
-        if (token == "roll")
-        {
+        if (token == "roll") {
             is >> token;
             string rollStr = token;
             lastRoll = notation::fromStr(rollStr);
@@ -98,8 +96,7 @@ void commandLine()
             rollSet = true;
         }
 
-        if (token == "tomove")
-        {
+        if (token == "tomove") {
             std::string playerStr = notation::toStr(pos.getToMove());
             cout << playerStr << endl;
         }
@@ -128,30 +125,30 @@ void commandLine()
             }
         }
 
-        if (token == "moves")
-        {
-            if (!rollSet)
-            {
+        if (token == "moves") {
+            if (!rollSet) {
                 cout << "No dice has been rolled yet." << endl << "Please enter the rolled dice using the command: roll x+y" << endl;
             }
             else {
                 movelist ml = pos.getLegalMoves(lastRoll, pos.getToMove());
-                for (int j = 0; j < ml.count(); j++) {
-                    cout << notation::toStr(ml[j]) << endl;
+                if (ml.count() == 0) {
+                    cout << "No moves" << endl;
+                }
+                else {
+                    for (int j = 0; j < ml.count(); j++) {
+                        cout << notation::toStr(ml[j]) << endl;
+                    }
                 }
             }
         }
 
-        if (token == "go")
-        {
+        if (token == "go") {
             while (is >> token)
             {
-                if (token == "infinite")
-                {
+                if (token == "infinite") {
                     mcts::searchInf(pos, lastRoll);
                 }
-                else
-                {
+                else {
                     int ms = stoi(token);
                     int64 best = mcts::search(pos, lastRoll, ms);
                     cout << "bestmove " << notation::toStr(best) << endl;
@@ -159,13 +156,15 @@ void commandLine()
             }
         }
 
-        if (token == "stop")
-        {
+        if (token == "stop") {
             int64 best = mcts::stopSearch();
             cout << "bestmove " << notation::toStr(best) << endl;
         }
 
     } while (cmd != "quit"); // Command line args are one-shot
+
+    //Make sure all searches stop
+    mcts::stopSearch();
 }
 
 int main() {
@@ -189,8 +188,8 @@ int main() {
     tests::testSearch();
     tests::testMemory();
 
-    //commandLine();
-    simulate(false, 10000, 10);
+    commandLine();
+    //simulate(false, 10000, 10);
 
     return 0;
 }
